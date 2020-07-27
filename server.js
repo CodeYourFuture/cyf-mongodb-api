@@ -23,7 +23,6 @@ client.connect(function () {
     });
   });
 
-  
   app.get("/films/:id", function (request, response) {
     const collection = db.collection("moveis");
     //get id
@@ -47,6 +46,22 @@ client.connect(function () {
     });
   });
 
+  app.post("/films/add", function (request, response) {
+    // get collection (movies)
+    const collection = db.collection("moveis");
+    // get data from request.body (NOT the query...)
+    const searchObject = request.body;
+    // collection.insertOne(data, function(error, result))
+    collection.insertOne(searchObject, (err, result) => {
+      // if everything is not ok -> send error response (500)
+      if (err) {
+        response.status(500).send(err);
+        // if everything is ok -> send returned record (a bit tricky to find it...)
+      } else {
+        response.send(result.ops[0]);
+      }
+    });
+  });
 
   app.listen(3000);
 });
