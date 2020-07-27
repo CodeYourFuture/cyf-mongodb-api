@@ -23,5 +23,30 @@ client.connect(function () {
     });
   });
 
+  
+  app.get("/films/:id", function (request, response) {
+    const collection = db.collection("moveis");
+    //get id
+    //validate the id
+    if (!mongodb.ObjectId.isValid(request.params.id)) {
+      response.status(400).json("the id is not right!");
+    }
+    const id = new mongodb.ObjectID(request.params.id);
+
+    const searchedObject = {
+      _id: id,
+    };
+    collection.findOne(searchedObject, (err, result) => {
+      if (err) {
+        response.status(500).send(err);
+      } else if (result) {
+        response.status(200).send(result);
+      } else {
+        response.status(404).send("the object not found!");
+      }
+    });
+  });
+
+
   app.listen(3000);
 });
