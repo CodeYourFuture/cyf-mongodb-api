@@ -83,6 +83,33 @@ client.connect(function () {
     })
   });
 
+  app.put("/films/:id", function (request, response) {
+    const collection = db.collection("moveis");
+    if(!mongodb.ObjectID.isValid(request.params.id)){
+      response.status(400).send("please enter a valid 'id'");
+    }
+    const id =new mongodb.ObjectID(request.params.id);
+    const searchedObject = {
+      _id:id,
+    }
+    const movie = {
+      $set:
+        request.body
+      };
+      if(request.body._id){
+        delete(request.body._id)
+        console.log('your id has deleted')
+      }
+    collection.findOneAndUpdate(searchedObject, movie, (err, result)=>{
+      if(err){
+        return response.status(500).send(err);
+      }else if(result){
+        return response.status(200).send(result);
+      }else{
+        response.status(404).send('Movie not found!')
+      }
+    })
+  });
 
   app.listen(3000);
 });
